@@ -5,13 +5,15 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +23,10 @@ import (
  */
 func generateCode() string {
 	// 生成する文字列の候補
-	candidates := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	candidates := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 	// 文字列の長さ
-	length := 10
+	length := 20
 
 	// 現在時刻からシード値を生成する
 	rand.Seed(time.Now().UnixNano())
@@ -80,7 +82,16 @@ func main() {
 		// Set amount and Generate verify token
 		// this number must be Zero or more
 		amount_to_be_charged := c.PostForm("amount")
-		raw := fmt.Sprintf("%s::%f::%s", ORDER_CODE, amount_to_be_charged, HASH_TOKEN)
+
+		fAmount, err := strconv.ParseFloat(amount_to_be_charged, 64)
+		if err != nil {
+			fmt.Printf("%s\n", err.Error())
+			return
+		}
+
+		fmt.Printf("amount_to_be_charged: %s\n", fAmount)
+
+		raw := fmt.Sprintf("%s::%f::%s", ORDER_CODE, fAmount, HASH_TOKEN)
 		verify_token := sha256.Sum256([]byte(raw))
 
 		// data to be sent to api
@@ -88,7 +99,7 @@ func main() {
 		data.Add("identification_token", AUTH_TOKEN)
 		data.Add("order_code", ORDER_CODE)
 		data.Add("verify_token", hex.EncodeToString(verify_token[:]))
-		data.Add("amount", amount_to_be_charged)
+		data.Add("amount", fmt.Sprintf("%f", fAmount))
 		data.Add("amount_type", "JPY")
 		data.Add("ext_description", "This is payment for NFT")
 		data.Add("ext_reserved", "0x")
