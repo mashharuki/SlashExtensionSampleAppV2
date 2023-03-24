@@ -10,6 +10,7 @@
     "deploy:fuji": "npx hardhat run scripts/deploy.js --network fuji",
     "deploy:mumbai": "npx hardhat run scripts/deploy.js --network mumbai",
     "deploy:bsctest": "npx hardhat run scripts/deploy.js --network bsctest",
+    "deploy:goerli": "npx hardhat run scripts/deploy.js --network goerli",
     "coverage": "npx hardhat coverage",
     "solgraph": "node scripts/solgraph.js"
   },

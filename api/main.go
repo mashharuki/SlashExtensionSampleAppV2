@@ -64,6 +64,7 @@ func main() {
 	 * Slashの決済用のURLを生成するAPI
 	 */
 	r.POST("/getUrl", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
 		// api-endpoint
 		API_ENDPOINT := "https://testnet.slash.fi/api/v1/payment/receive"
 		// Authentication Token
@@ -82,15 +83,17 @@ func main() {
 		// Set amount and Generate verify token
 		// this number must be Zero or more
 		amount_to_be_charged := c.PostForm("amount")
-
+		// get ext_reserved
+		ext_reserved := c.PostForm("ext_reserved")
+		// float型に変換
 		fAmount, err := strconv.ParseFloat(amount_to_be_charged, 64)
 		if err != nil {
 			fmt.Printf("%s\n", err.Error())
 			return
 		}
 
-		fmt.Printf("amount_to_be_charged: %s\n", fAmount)
-
+		fmt.Printf("amount_to_be_charged: %f\n", fAmount)
+		// verify_tokenを生成する。
 		raw := fmt.Sprintf("%s::%f::%s", ORDER_CODE, fAmount, HASH_TOKEN)
 		verify_token := sha256.Sum256([]byte(raw))
 
@@ -102,7 +105,7 @@ func main() {
 		data.Add("amount", fmt.Sprintf("%f", fAmount))
 		data.Add("amount_type", "JPY")
 		data.Add("ext_description", "This is payment for NFT")
-		data.Add("ext_reserved", "0x")
+		data.Add("ext_reserved", ext_reserved)
 
 		// sending post request and saving response as response object
 		res, _ := http.PostForm(API_ENDPOINT, data)

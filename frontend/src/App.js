@@ -17,23 +17,25 @@ import { css } from "@emotion/react";
 import SquirrelsSvg from "./assets/rinkeby_squirrels.gif";
 import View from './Components/View';
 import paymentButton from './assets/paymentButton.png';
+import { Button } from '@mui/material';
+import superAgent from 'superagent';
 
 // コントラクトのアドレスとABIを設定
 const CONTRACT_ADDRESS = [
-  "0x80e1dCC9F79477a0296235e2231871CCc984152f",
+  "0xDFb533125a3Fdde24c1cdCe563aa7bEBaAd5A1Cd",
   "0xAa363921A48Eac63F802C57658CdEde768B3DAe1",
-  "0xAa363921A48Eac63F802C57658CdEde768B3DAe1"
+  "0xAa363921A48Eac63F802C57658CdEde768B3DAe1",
+  "0xd36dbfb7Cb30167A92650A00Ca460d0EDd834780",
+  "0x336709CAbCB19362Bf9374aE4811FF934E9626B6"
 ];
 const ABI = Contract.abi;
 const MAX_SUPPLY = 30;
 const POLYGONSCAN_LINK = `https://mumbai.polygonscan.com/address/${CONTRACT_ADDRESS[0]}`;
 const BLOCKSCOUT_LINK = `https://blockscout.com/shibuya/address/${CONTRACT_ADDRESS[1]}/transactions`;
 const BLOCKSCOUT_LINK2 = `https://blockscout.com/shiden/address/${CONTRACT_ADDRESS[2]}/transactions`;
+const ETHERSCAN_LINK = `https://goerli.etherscan.io/address/${CONTRACT_ADDRESS[3]}`;
+const SNOWTRACE_LINK = `https://testnet.snowtrace.io/address/${CONTRACT_ADDRESS[4]}`;
 const OPENSEA_LINK = "https://testnets.opensea.io/account";
-
-// 決済用URL (ここを適宜変更する。)
-const PAYMENT_URL = "https://testnet.slash.fi/payment-merchant/2334ea3bc896476c4e8b525952d411f2";
-
 
 // スピナー用の変数
 const override = css`
@@ -64,6 +66,9 @@ function App() {
   const [count, setCount] = useState(1);
   const [viewFlg, setViewFlg] = useState(false);
   const [baseURI, setBaseURI] = useState(null);
+  const [baseApiUrl, setBaseApiUrl] = useState("http://localhost:8080");
+  const [basePrice, setBasePrice] = useState(100);
+  const [paymentUrl, setPaymentUrl] = useState("");
 
   /**
    * ウォレットの接続状態を確認するメソッド
@@ -77,7 +82,7 @@ function App() {
     } else {
        // 接続しているチェーンが Rinkebyであることを確認する。
        let chainId = await ethereum.request({ method: "eth_chainId" });
-       if (chainId === "0x13881" || "0x51" || "0x150") {
+       if (chainId === "0x13881" || "0x51" || "0x150" || "0x5" || "0xa869") {
         setNetworkId(chainId);
         // ネットワークによってセットするコントラクトのアドレスを変更する。
         if (chainId === "0x13881") { // Munbai network
@@ -86,6 +91,10 @@ function App() {
           setContractAddr(CONTRACT_ADDRESS[1]);
         } else if (chainId === "0x150") { // Shiden network
           setContractAddr(CONTRACT_ADDRESS[2])
+        } else if (chainId === "0x5") { // Goerli network
+          setContractAddr(CONTRACT_ADDRESS[3])
+        } else if (chainId === "0xa869") { // Avalanche Fuji Chain
+          setContractAddr(CONTRACT_ADDRESS[4])
         }
 
         // アカウント情報を要求する
@@ -119,7 +128,7 @@ function App() {
       // 接続しているチェーンが Rinkebyであることを確認する。
       let chainId = await ethereum.request({ method: "eth_chainId" });
       console.log("chain id", chainId);
-      if (chainId === "0x13881" || "0x51" || "0x150") {
+      if (chainId === "0x13881" || "0x51" || "0x150" || "0x5" || "0xa869") {
         setNetworkId(chainId);
         // ネットワークによってセットするコントラクトのアドレスを変更する。
         if (chainId === "0x13881") { // Munbai network
@@ -128,6 +137,10 @@ function App() {
           setContractAddr(CONTRACT_ADDRESS[1]);
         } else if (chainId === "0x150") { // Shiden network
           setContractAddr(CONTRACT_ADDRESS[2])
+        } else if (chainId === "0x05") { // Goerli network
+          setContractAddr(CONTRACT_ADDRESS[3])
+        } else if (chainId === "0xa869") { // Avalanche Fuji Chain
+          setContractAddr(CONTRACT_ADDRESS[4])
         }
 
         try {
@@ -235,32 +248,103 @@ function App() {
   };
 
   /**
+   * 決済用のURLを取得するためのメソッド
+   */
+  const getUrl = async() => {
+    // create encode data
+    const extReserved = {
+      types: ['uint'],
+      params: [count]
+    }
+
+    const encodedExtReserved = ethers.utils.defaultAbiCoder.encode(
+      extReserved.types,
+      extReserved.params
+    );
+    
+    console.log(`extReserved: ${encodedExtReserved}`)
+      
+    // 決済用のURLを取得するためのAPIを呼び出す。  
+    await superAgent
+      .post(baseApiUrl + "/getUrl")
+      .type('form')
+      .send({
+        amount: `${basePrice * count}`, 
+        extReserved: encodedExtReserved
+      })
+      .set({ 
+        Accept: 'application/json',
+      })
+      .end((err, res) => {
+        if (err) {
+          console.log("決済用URL取得中にエラー発生", err)
+          return err;
+        }
+        console.log("決済用URL取得成功！：", res.body.url);
+        setPaymentUrl(res.body.url);
+        setMintingFlg(true)
+      });
+      
+  };
+
+  /**
    * NFTMintボタンコンポーネント
    */
   const mintNftButton = () => {
     return (
-        <a
-          href={PAYMENT_URL}
-          target="_blank"
-          className="App-link"
-          rel="noopener noreferrer"
-          type='button'
+      <>
+        <Box sx={{ flexGrow: 1, overflow: "hidden", mt: 1, my: 1}}>
+          <Stack 
+            direction="row" 
+            justifyContent="center" 
+            alignItems="center" 
+            spacing={1}
+          >
+            <IconButton 
+              aria-label="remove"
+              size='large' 
+              onClick={() => setCount(count - 1)}
+            >
+              <RemoveCircleIcon/>
+            </IconButton>
+            <TextField
+              id="outlined-number"
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={count}
+            />
+            <IconButton 
+              aria-label="add" 
+              size='large' 
+              onClick={() => setCount(count + 1)}
+            >
+              <AddCircleIcon/>
+            </IconButton>
+          </Stack>
+        </Box>
+        <Button
+          onClick={getUrl}
         >
           <img 
             src={paymentButton} 
             alt="paymentButton" 
             height={50} 
           />
-        </a>
+        </Button>
+      </>
     );
   };
 
   useEffect(() => {
     checkWalletIsConnected();
+    setMintingFlg(false);
   }, [contractAddr]);
 
   useEffect(() => {
     checkWalletIsConnected();
+    setMintingFlg(false);
   }, [networkId]);
 
   return (
@@ -291,7 +375,7 @@ function App() {
         </>
       ) : (
         <>
-          <h1>Let's Mint Generative NFT !!</h1>
+          <h1>Let's Mint NFT! 1個1,00円です。</h1>
             <Box sx={{ flexGrow: 1, overflow: "hidden", mt: 4, my: 2}}>
               <strong>
                 contract address : 
@@ -310,6 +394,16 @@ function App() {
                     {contractAddr}
                   </a>
                 )} 
+                {(networkId === "0x5") && (
+                  <a href={ETHERSCAN_LINK}>
+                    {contractAddr}
+                  </a>
+                )} 
+                {(networkId === "0xa869") && (
+                  <a href={SNOWTRACE_LINK}>
+                    {contractAddr}
+                  </a>
+                )} 
               </strong>
             </Box>
             <Grid
@@ -325,18 +419,18 @@ function App() {
                   </Box>
                   <img src={SquirrelsSvg} alt="Polygon Squirrels" height="40%" /><br/>
                   { mintingFlg ?
-                      (
-                        <div>
-                          <ClipLoader color="#99FF99" loading={mintingFlg} css={override} size={35} /><br/>
-                          <div className="spin-color">
-                            Now Minting ...
-                          </div>
+                    (
+                      <div>
+                        <div className="spin-color">
+                          Click this link !
                         </div>
-                      ) :( 
-                      <>
-                        { currentAccount ? mintNftButton() : connectWalletButton()}
-                      </>
-                      )
+                        <a href={paymentUrl}>magic link</a>
+                      </div>
+                    ) :( 
+                    <>
+                      { currentAccount ? mintNftButton() : connectWalletButton()}
+                    </>
+                    )
                   }
                 </StyledPaper>
                 <button 

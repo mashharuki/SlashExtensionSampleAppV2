@@ -28,7 +28,7 @@ contract NFTCollectible is ERC721Enumerable, Ownable, ISlashCustomPlugin {
 
     string public baseTokenURI;
 
-    constructor(string memory baseURI) ERC721("My NFT Collectible", "NFTC") {
+    constructor(string memory baseURI) ERC721("SlashExtensionSample", "SES") {
         setBaseURI(baseURI);
     }
 
@@ -91,7 +91,7 @@ contract NFTCollectible is ERC721Enumerable, Ownable, ISlashCustomPlugin {
     function _mintSingleNFT() private {
         uint newTokenID = _tokenIds.current();
         // call _safeMint func
-        _safeMint(msg.sender, newTokenID);
+        _safeMint(tx.origin, newTokenID);
         _tokenIds.increment();
     }
 

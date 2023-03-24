@@ -10,7 +10,8 @@ const {
   ETHERSCAN_APIKEY, 
   POLYGONSCAN_APIKEY,
   POLYGON_URL,
-  ASTAR_URL 
+  ASTAR_URL,
+  SNOWTRACE_APIKEY
 } = process.env;
 
 const GWEI = 1000 * 1000;
@@ -33,17 +34,17 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.0",
-  /*
   etherscan: {
-    apiKey: ETHERSCAN_APIKEY
+    apiKey: SNOWTRACE_APIKEY
   },
-  */
   paths: {                         
     artifacts: './../frontend/src/contracts',  
   },
+  /*
   etherscan: {
     apiKey: POLYGONSCAN_APIKEY
-  },
+  }
+  */
   networks: {
     goerli: {
       url: API_URL_KEY,

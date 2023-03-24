@@ -1,18 +1,30 @@
-# SlashExtensionSampleApp
+# SlashExtensionSampleAppV2
 
-SlashExtensionSampleApp
+SlashExtensionSampleAppV2
 
 ## アプリの画面イメージ
 
 ![](./docs/init.png)
 
+## デプロイしたNFTコントラクト (Goerli)
+
+[0xd36dbfb7Cb30167A92650A00Ca460d0EDd834780](https://goerli.etherscan.io/address/0xd36dbfb7Cb30167A92650A00Ca460d0EDd834780#code)
+
 ## デプロイしたNFTコントラクト (Mumbai)
 
-[0x80e1dCC9F79477a0296235e2231871CCc984152f](https://mumbai.polygonscan.com/address/0x80e1dCC9F79477a0296235e2231871CCc984152f)
+[0xdd71f86da74e8B28223074c83Df79BA203339057](https://goerli.etherscan.io/address/0xdd71f86da74e8B28223074c83Df79BA203339057)
 
-## 実際にNFTを移転させたトランザクション (Mumbai)
+## デプロイしたNFTコントラクト (Avalanche Fuji Chain)
 
-[0x3c04d339974a7ea75600cec78dfd7b237845630a02d2ff87a1dff19f13fa180f](https://mumbai.polygonscan.com/tx/0x3c04d339974a7ea75600cec78dfd7b237845630a02d2ff87a1dff19f13fa180f)
+[0x336709CAbCB19362Bf9374aE4811FF934E9626B6](https://testnet.snowtrace.io/address/0x336709CAbCB19362Bf9374aE4811FF934E9626B6#code)
+
+## 実際にNFTを移転させたトランザクション (Goerli)
+
+[0x65da2d7082c9692c67e717e23eccb42a77800e71b95013713b49b1ac5bd41bd7](https://goerli.etherscan.io/tx/0x65da2d7082c9692c67e717e23eccb42a77800e71b95013713b49b1ac5bd41bd7)
+
+## 実際にNFTを移転させたトランザクション (Avalanche Fuji Chain)
+
+[]()
 
 ## 決済用URLを生成するためのコマンド
 
