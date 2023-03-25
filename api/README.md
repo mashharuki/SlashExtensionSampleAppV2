@@ -3,7 +3,7 @@
 ### 動かし方
 
 ```bash
-GO_ENV=dev go run ./main.go
+go run ./main.go
 ```
 
 ### 叩き方

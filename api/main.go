@@ -84,7 +84,7 @@ func main() {
 		// this number must be Zero or more
 		amount_to_be_charged := c.PostForm("amount")
 		// get ext_reserved
-		ext_reserved := c.PostForm("ext_reserved")
+		ext_reserved := c.PostForm("extReserved")
 		// float型に変換
 		fAmount, err := strconv.ParseFloat(amount_to_be_charged, 64)
 		if err != nil {
@@ -93,6 +93,7 @@ func main() {
 		}
 
 		fmt.Printf("amount_to_be_charged: %f\n", fAmount)
+		fmt.Printf("ext_reserved: %s\n", ext_reserved)
 		// verify_tokenを生成する。
 		raw := fmt.Sprintf("%s::%f::%s", ORDER_CODE, fAmount, HASH_TOKEN)
 		verify_token := sha256.Sum256([]byte(raw))
@@ -105,7 +106,7 @@ func main() {
 		data.Add("amount", fmt.Sprintf("%f", fAmount))
 		data.Add("amount_type", "JPY")
 		data.Add("ext_description", "This is payment for NFT")
-		data.Add("ext_reserved", ext_reserved)
+		data.Add("ext_reserved", fmt.Sprintf("%s", ext_reserved))
 
 		// sending post request and saving response as response object
 		res, _ := http.PostForm(API_ENDPOINT, data)

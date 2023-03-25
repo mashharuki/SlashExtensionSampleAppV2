@@ -24,7 +24,11 @@ SlashExtensionSampleAppV2
 
 ## 実際にNFTを移転させたトランザクション (Avalanche Fuji Chain)
 
-[]()
+[0x074d92e93e3e565b630623864a0513f60378a3be1698fd1acf70018680224f3c](https://testnet.snowtrace.io/tx/0x074d92e93e3e565b630623864a0513f60378a3be1698fd1acf70018680224f3c)
+
+## OpenSea上のページ (testnet)
+
+[slashextensionsample](https://testnets.opensea.io/ja/collection/slashextensionsample-1)
 
 ## 決済用URLを生成するためのコマンド
 
