@@ -73,7 +73,7 @@ func main() {
 		HASH_TOKEN := os.Getenv("SLASH_HASH_TOKEN")
 
 		// Code set by the merchant to uniquely identify the payment
-		// 本来はDBベースに保管しておく必要がある。
+		// 決済ごとにユニークな値を生成する必要あり
 		ORDER_CODE := generateCode()
 		// 確認のため出力
 		fmt.Printf("AUTH_TOKEN: %s\n", AUTH_TOKEN)
@@ -81,10 +81,10 @@ func main() {
 		fmt.Printf("ORDER_CODE: %s\n", ORDER_CODE)
 
 		// Set amount and Generate verify token
-		// this number must be Zero or more
-		amount_to_be_charged := c.PostForm("amount")
 		// get ext_reserved
 		ext_reserved := c.PostForm("extReserved")
+		// this number must be Zero or more
+		amount_to_be_charged := c.PostForm("amount")
 		// float型に変換
 		fAmount, err := strconv.ParseFloat(amount_to_be_charged, 64)
 		if err != nil {
