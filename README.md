@@ -36,6 +36,20 @@ SlashExtensionSampleAppV2
 curl -Ss -XPOST localhost:3001/api/generateUrl -d '{ \"amount\": \" 2000\",  \"amount_type\": \"JPY\", \"ext_reserved\": \"0x\", \"ext_description\": \"テストです。\" }'
 ```
 
+## 動かし方
+
+### フロントエンド
+
+```bash
+cd frontend && npm i && npm run start
+```
+
+### APIサーバー
+
+```bash
+cd api && make start
+```
+
 ### 参考サイト
 
 1. [SushiSwap](https://app.sushi.com/swap?inputCurrency=ETH&outputCurrency=0x3813e82e6f7098b9583FC0F33a962D02018B6803&chainId=80001)
